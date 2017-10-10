@@ -1,9 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
 class Admin extends CI_Controller {
-
-	public function accman($page = 'browse'){ // browse, add, view ,change
+public function accman($page = 'browse', $offset = 0){ // browse, add, view ,change
         
             //check if user is loged in 
             if(!$this->session->userdata('logged_in')){
@@ -15,7 +13,6 @@ class Admin extends CI_Controller {
             }
                 
             $data['active_tab'] = "active-tab-sidenav"; 
-            $data['active_sublink'] = "active-sidenav-sublinks"; 
             $data['active_page'] = "active-page-option";
         
             //if($page == 'add' || $page == 'view'){
@@ -26,8 +23,35 @@ class Admin extends CI_Controller {
             //}
 		
 			if($page == 'browse'){
-				$data['all_admins'] = $this->post_model->get_all_accounts(1);
-				$data['all_users'] = $this->post_model->get_all_accounts(2);
+
+                $config['base_url'] = base_url() . 'admin/accman/browse/';
+                    
+                $lib_account_total = $this->db->count_all('library_accounts');  
+                $user_account_total = $this->db->count_all('user_accounts');
+                
+                
+                if($lib_account_total > $user_account_total){
+                    $config['total_rows'] = $lib_account_total;
+                }
+                else if($user_account_total > $lib_account_total){
+                    $config['total_rows'] = $user_account_total;
+                }
+                
+                
+                $config['per_page'] = 4;
+                $config['url_segment'] = 4;
+               // $config['use_page_numbers'] = TRUE;
+                
+                
+                
+                $config['attributes'] = array('class' => 'pagination-link');
+                
+                //init pagination
+                $this->pagination->initialize($config);
+                
+                $data['all_admins'] = $this->post_model->get_all_accounts(1,$config['per_page'],$offset);
+				$data['all_users'] = $this->post_model->get_all_accounts(2,$config['per_page'],$offset);
+                
 			}
 		
 			$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
@@ -65,7 +89,6 @@ class Admin extends CI_Controller {
             }
 			
 			$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
-
             $this->load->view('templates/adminHeader');
             $this->load->view('admin/index', $data);
             $this->load->view('admin/resource/resourceTab');
@@ -87,7 +110,6 @@ class Admin extends CI_Controller {
             $data['active_page'] = "active-page-option";
 			
 			$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
-
             $this->load->view('templates/adminHeader');
             $this->load->view('admin/index', $data);
             $this->load->view('admin/records/recTab');
@@ -106,13 +128,11 @@ class Admin extends CI_Controller {
 			if(!file_exists(APPPATH.'views/admin/statistics/'.$page.'.php')){
                 show_404();
             }
-
 			$data['active_sublink'] = "active-sidenav-sublinks"; 
             $data['active_tab'] = "active-tab-sidenav";
             $data['active_page'] = "active-page-option";
 		
 			$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
-
             $this->load->view('templates/adminHeader');
             $this->load->view('admin/index', $data);
             $this->load->view('admin/statistics/statTab');
@@ -140,14 +160,11 @@ class Admin extends CI_Controller {
 				
 				$data['active_tab'] = "active-tab-sidenav"; 
 				$data['active_page'] = "active-page-option";
-
 				$data['account_types'] = $this->post_model->get_account_type();
 				$data['departments'] = $this->post_model->get_department();
 				$data['library_sections'] = $this->post_model->get_library_section();
 				$data['programs'] = $this->post_model->get_program();
-
 				$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
-
 				$this->load->view('templates/adminHeader'); //just meta data
 				$this->load->view('admin/index', $data);    //sidebar and mainHeader
 				$this->load->view('admin/account/accTab');  //content header
@@ -160,14 +177,11 @@ class Admin extends CI_Controller {
 				
 				$data['active_tab'] = "active-tab-sidenav"; 
 				$data['active_page'] = "active-page-option";
-
 				$data['account_types'] = $this->post_model->get_account_type();
 				$data['departments'] = $this->post_model->get_department();
 				$data['library_sections'] = $this->post_model->get_library_section();
 				$data['programs'] = $this->post_model->get_program();
-
 				$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
-
 				$this->load->view('templates/adminHeader'); //just meta data
 				$this->load->view('admin/index', $data);    //sidebar and mainHeader
 				$this->load->view('admin/account/accTab');  //content header
@@ -176,6 +190,17 @@ class Admin extends CI_Controller {
 				$this->load->view('templates/adminFooter');
 			}
 		}
+    
+     public function customFname($str) {
+    // custom error message
+        $this->form_validation->set_message('customAlpha', 'error message');
+    if (!preg_match("/^[a-zA-Z ]*$/",$str)){
+        return false;      
+    }
+        else{
+            return true;
+        }
+        }
     
     public function createUser(){
         
@@ -203,7 +228,7 @@ class Admin extends CI_Controller {
 			
 	   	}
         
-        $this->form_validation->set_rules('fname', 'First Name', 'required|alpha|trim');
+        $this->form_validation->set_rules('fname', 'First Name', 'required|callback_customFname');
         $this->form_validation->set_rules('lname', 'Last Name', 'required|trim|alpha');
         $this->form_validation->set_rules('email', 'E-mail', 'required|valid_email|callback_check_email_exists['.$accountType.']');
         $this->form_validation->set_rules('password', 'Password', 'required|min_length[4]');
@@ -233,7 +258,6 @@ class Admin extends CI_Controller {
             }
 			
 			$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
-
             $this->load->view('templates/adminHeader'); //just meta data
             $this->load->view('admin/index', $data);    //sidebar and mainHeader
             $this->load->view('admin/account/accTab');  //content header
@@ -344,7 +368,6 @@ class Admin extends CI_Controller {
             //}
 			
 			$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
-
             $this->load->view('templates/adminHeader'); //just meta data
             $this->load->view('admin/index', $data);    //sidebar and mainHeader
             $this->load->view('admin/account/accTab');  //content header
@@ -464,7 +487,6 @@ class Admin extends CI_Controller {
             }
 			
 			$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
-
             $this->load->view('templates/adminHeader'); //just meta data
             $this->load->view('admin/index', $data);    //sidebar and mainHeader
             $this->load->view('admin/resource/resourceTab');  //content header
@@ -480,9 +502,7 @@ class Admin extends CI_Controller {
 				$config['max_size'] = '2048';
 				$config['max_width'] = '0';
 				$config['max_height'] = '0';
-
 				$this->load->library('upload', $config);
-
 				if(!$this->upload->do_upload('userfile')){
 					$errors = array('error' => $this->upload->display_errors());
 					$post_image = 'noimage.jpg';
@@ -490,14 +510,43 @@ class Admin extends CI_Controller {
 					$data = array('upload_data' => $this->upload->data());
 					$post_image = $_FILES['userfile']['name'];
 				}
-
 				$this->post_model->set_book($post_image);
             
                 redirect('admin/resdata/add');
                }
              
             }
-
-
+    
+    public function search(){
+       
+   
+        $data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
+        
+        $search_query = $this->input->post('search_basic');
+        
+        if($search_query == strpos('admin')){
+             $search_query = trim($this->input->post('search_basic'));
+        }
+        
+        
+          
+        $data['search_user'] = $this->post_model->search_user($search_query);
+        $data['search_admin'] = $this->post_model->search_admin($search_query);
+        
+        
+        //print_r($data['search']);
+        
+        $page = 'browse';
+         
+        $this->load->view('templates/adminHeader'); //just meta data
+        $this->load->view('admin/index', $data);    //sidebar and mainHeader
+        $this->load->view('admin/account/accTab');  //content header
+        $this->load->view('admin/account/search',$data);
+        $this->load->view('js/adminJS');
+        $this->load->view('templates/adminFooter');
+        
+      
+        
+    }
     
 } // end of class

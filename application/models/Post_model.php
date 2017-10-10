@@ -471,6 +471,42 @@ class Post_model extends CI_Model{
         $this->db->insert('book_type',html_escape($data));
         
     }
+	
+	  
+    public function get_book(){
+        $this->db->order_by('id','DESC');
+        $query = $this->db->get('book_type');
+        return $query->result_array(); //return in array form not objects
+    }
+    
+    public function search_user($search_term){
+      
+        
+        $this->db->like('user_fname',$search_term);
+        $this->db->or_like('user_lname', $search_term);
+        $this->db->or_like('user_id_number', $search_term);
+        $query = $this->db->get('user_accounts');
+        
+         return $query->result_array();
+        
+        
+    }
+    
+     public function search_admin($search_term){
+
+        
+        
+        $this->db->or_like('lib_fname',$search_term);
+        $this->db->or_like('lib_lname', $search_term);
+        $this->db->or_like('lib_id_number', $search_term);
+        
+        
+        $query = $this->db->get('library_accounts');
+        
+         return $query->result_array();
+        
+        
+    }
     
     
 
