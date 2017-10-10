@@ -3,7 +3,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Admin extends CI_Controller {
 
-	public function accman($page = 'browse', $offset = 0){ // browse, add, view ,change
+	public function accman($page = 'browse'){ // browse, add, view ,change
         
             //check if user is loged in 
             if(!$this->session->userdata('logged_in')){
@@ -15,6 +15,7 @@ class Admin extends CI_Controller {
             }
                 
             $data['active_tab'] = "active-tab-sidenav"; 
+            $data['active_sublink'] = "active-sidenav-sublinks"; 
             $data['active_page'] = "active-page-option";
         
             //if($page == 'add' || $page == 'view'){
@@ -25,23 +26,8 @@ class Admin extends CI_Controller {
             //}
 		
 			if($page == 'browse'){
-
-                $config['base_url'] = base_url() . 'admin/accman/browse/';
-                
-                $lib_account_total = $this->db->count_all('library_accounts');
-                $user_account_total = $this->db->count_all('user_accounts');
-                
-                $config['total_rows'] = $user_account_total + $lib_account_total;
-                $config['per_page'] = 6;
-                $config['url_segment'] = 4;
-                $config['attributes'] = array('class' => 'pagination-link');
-                
-                //init pagination
-                $this->pagination->initialize($config);
-                
-                $data['all_admins'] = $this->post_model->get_all_accounts(1,$config['per_page'],$offset);
-				$data['all_users'] = $this->post_model->get_all_accounts(2,$config['per_page'],$offset);
-                
+				$data['all_admins'] = $this->post_model->get_all_accounts(1);
+				$data['all_users'] = $this->post_model->get_all_accounts(2);
 			}
 		
 			$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
@@ -66,7 +52,8 @@ class Admin extends CI_Controller {
             if(!file_exists(APPPATH.'views/admin/resource/'.$page.'.php')){
                 show_404();
             }
-
+			
+			$data['active_sublink'] = "active-sidenav-sublinks"; 
             $data['active_tab'] = "active-tab-sidenav";
             $data['active_page'] = "active-page-option";
         
@@ -94,7 +81,8 @@ class Admin extends CI_Controller {
             if(!$this->session->userdata('logged_in')){
                 redirect('user/login');
             }
-
+			
+			$data['active_sublink'] = "active-sidenav-sublinks"; 
             $data['active_tab'] = "active-tab-sidenav";
             $data['active_page'] = "active-page-option";
 			
@@ -119,6 +107,7 @@ class Admin extends CI_Controller {
                 show_404();
             }
 
+			$data['active_sublink'] = "active-sidenav-sublinks"; 
             $data['active_tab'] = "active-tab-sidenav";
             $data['active_page'] = "active-page-option";
 		
@@ -142,8 +131,8 @@ class Admin extends CI_Controller {
 			
 			//$this->form_validation->set_rules('id-num', 'ID', 'required|exact_length[9]');
 			
-			
-			$data['view_user'] = $this->post_model->get_view_user(); // used to fetch user/admin data from database
+			$data['active_sublink'] = "active-sidenav-sublinks";
+			$data['view_user'] = $this->post_model->get_view_user();
 			
 			if($data['view_user']){
 				//$name = $data['view_user']['fname'];
@@ -172,11 +161,11 @@ class Admin extends CI_Controller {
 				$data['active_tab'] = "active-tab-sidenav"; 
 				$data['active_page'] = "active-page-option";
 
-				/*$data['account_types'] = $this->post_model->get_account_type();
+				$data['account_types'] = $this->post_model->get_account_type();
 				$data['departments'] = $this->post_model->get_department();
 				$data['library_sections'] = $this->post_model->get_library_section();
 				$data['programs'] = $this->post_model->get_program();
-                */
+
 				$data['user_info'] = $this->post_model->get_session_account_info($this->session->userdata('id_login'),1);
 
 				$this->load->view('templates/adminHeader'); //just meta data
@@ -214,7 +203,7 @@ class Admin extends CI_Controller {
 			
 	   	}
         
-        $this->form_validation->set_rules('fname', 'First Name', 'required|alpha');
+        $this->form_validation->set_rules('fname', 'First Name', 'required|alpha|trim');
         $this->form_validation->set_rules('lname', 'Last Name', 'required|trim|alpha');
         $this->form_validation->set_rules('email', 'E-mail', 'required|valid_email|callback_check_email_exists['.$accountType.']');
         $this->form_validation->set_rules('password', 'Password', 'required|min_length[4]');
@@ -223,15 +212,18 @@ class Admin extends CI_Controller {
         $this->form_validation->set_rules('address', 'Address', 'required');
 		
         if($this->form_validation->run() === FALSE){
-           echo "<script>alert('failed to add')</script>";
 	       $page = 'add';
         
             if(!file_exists(APPPATH.'views/admin/account/'.$page.'.php')){
                 show_404();
+            }else{
+                $page = 'add';
             }
-                
+            
+            $data['active_sublink'] = "active-sidenav-sublinks";
             $data['active_tab'] = "active-tab-sidenav"; 
             $data['active_page'] = "active-page-option";
+            $data['page_form'] = $this->input->post('account');
             
             if($page == 'add'){
                 $data['account_types'] = $this->post_model->get_account_type();
@@ -253,16 +245,16 @@ class Admin extends CI_Controller {
         else{
          
                if($this->input->post('account') != 1)/*not admin/library staff */{
-				   $enc_password = md5('test'.$this->input->post('password').'test');
+				   $enc_password = md5($this->input->post('password'));
                     
                    $this->post_model->set_users($enc_password);
-                   redirect('admin/accman/adminInfo');
+                   redirect('admin/accman/browse');
                }
                 else /*library staff*/{
-                   $enc_password = md5('test'.$this->input->post('password').'test');
+                   $enc_password = md5($this->input->post('password'));
                     
                    $this->post_model->set_admin_users($enc_password);
-                   redirect('admin/accman/adminInfo');
+                   redirect('admin/accman/browse');
                }
             }
             
