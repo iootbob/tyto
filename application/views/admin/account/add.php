@@ -1,4 +1,25 @@
-
+<?php
+    $currentForm = "add-staff";
+    if(isset($page_form)){
+        switch($page_form){
+            case 1:
+                $currentForm = "add-staff";
+                break;
+            case 2:
+                $currentForm = "add-faculty";
+                break;
+            case 3:
+                $currentForm = "add-student";
+                break;
+            case 4;
+                $currentForm = "add-other";
+                break;
+            default:
+                $currentForm = "add-staff";
+                break;
+        }
+    }
+?>
 
 		<div class="page-option-view">
 			<style>
@@ -8,7 +29,7 @@
 				transition: all 0.3s;
 			}
 
-			#add-staff {
+			#<?php echo $currentForm; ?> {
 				opacity: 1;
 				display: block;
 			}
@@ -17,8 +38,11 @@
 				<?php echo form_label('Account Type:','account',$attributes = array("class" => "main-label-text input-box-label"));  ?>
 				<select class="input-box-fill" id="select-form-type" onChange="changeAddAccForm();">
 				<?php foreach($account_types as $account_type):?>
-
-					<option value="<?php echo $account_type['form_id']; ?>"><?php echo $account_type['name']; ?></option>
+                    <?php if($currentForm==$account_type['form_id']){?>
+                        <option value="<?php echo $account_type['form_id']; ?>" selected><?php echo $account_type['name']; ?></option>
+                    <?php } else { ?>
+					    <option value="<?php echo $account_type['form_id']; ?>"><?php echo $account_type['name']; ?></option>
+                    <?php } ?>
 
 				<?php endforeach; ?>
 
