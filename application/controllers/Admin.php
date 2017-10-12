@@ -138,6 +138,7 @@ class Admin extends CI_Controller {
 				//$name = $data['view_user']['fname'];
 				//echo "<script>alert('User Found $name')</script>";
 				
+				$data['active_sublink'] = "active-sidenav-sublinks";
 				$data['active_tab'] = "active-tab-sidenav"; 
 				$data['active_page'] = "active-page-option";
 
@@ -158,6 +159,7 @@ class Admin extends CI_Controller {
 			}else{
 				echo "<script>alert('User NOT Found')</script>";
 				
+				$data['active_sublink'] = "active-sidenav-sublinks";
 				$data['active_tab'] = "active-tab-sidenav"; 
 				$data['active_page'] = "active-page-option";
 
@@ -248,11 +250,40 @@ class Admin extends CI_Controller {
 				   $enc_password = md5($this->input->post('password'));
                     
                    $this->post_model->set_users($enc_password);
+				   
+				   if($this->input->post('account')==4){
+					   $maxID = $this->post_model->get_most_recent_id(4);
+					   $newID = $maxID[0]['user_id_number'];
+					   /*if ($maxID->num_rows() > 0)
+						{
+							$row = $maxID->result_array();
+							$newID = $row[0]['user_id_number'];
+							//$newID = "mseuf-".$newid;
+						}*/
+					   $this->session->set_flashdata('new_id_number',$newID);
+					}else{
+					   $this->session->set_flashdata('new_id_number',$this->input->post('id-num'));
+				   }
+				   $this->session->set_flashdata('new_name',$this->input->post('fname')." ".$this->input->post('lname'));
+				   $this->session->set_flashdata('new_password',$this->input->post('password'));
+				   
                    redirect('admin/accman/browse');
                }
                 else /*library staff*/{
                    $enc_password = md5($this->input->post('password'));
                     
+					$maxID = $this->post_model->get_most_recent_id(1);
+					$newID = $maxID[0]['lib_id_number'];
+					/*if ($maxID->num_rows() > 0)
+						{
+							$row = $maxID->result_array();
+							$newID = $row[0]['lib_id_number'];
+							//$newID = "admin-".$newid;
+						}*/
+					$this->session->set_flashdata('new_id_number',$newID);
+					$this->session->set_flashdata('new_name',$this->input->post('fname')." ".$this->input->post('lname'));
+				   $this->session->set_flashdata('new_password',$this->input->post('password'));
+					
                    $this->post_model->set_admin_users($enc_password);
                    redirect('admin/accman/browse');
                }
@@ -327,12 +358,12 @@ class Admin extends CI_Controller {
         $this->form_validation->set_rules('address', 'Address', 'required');
 		
 		if($this->form_validation->run() === FALSE){
-           echo "<script>alert('Failed to Update')</script>";
-	       $page = 'modify';
+	       /*$page = 'modify';
             if(!file_exists(APPPATH.'views/admin/account/'.$page.'.php')){
                 show_404();
             }
-                
+            
+			$data['active_sublink'] = "active-sidenav-sublinks";
             $data['active_tab'] = "active-tab-sidenav"; 
             $data['active_page'] = "active-page-option";
             
@@ -350,7 +381,8 @@ class Admin extends CI_Controller {
             $this->load->view('admin/account/accTab');  //content header
             $this->load->view('admin/account/'.$page);
             $this->load->view('js/adminJS');
-            $this->load->view('templates/adminFooter');
+            $this->load->view('templates/adminFooter');*/
+			$this->load->view('admin/accman/modify.php');
         }
         
         else{
