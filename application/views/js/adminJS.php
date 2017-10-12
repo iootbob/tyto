@@ -134,5 +134,75 @@ update_options();
 	}*/
 
 </script>
-<!--<script src="js/classie.js"></script>
-<script src="js/ajax_functions.js"></script>-->
+
+<script>
+	//for the modal
+	<?php
+	$showModal = false;
+	$check = $this->session->flashdata('new_name');
+	if((isset($check))!=""){
+		$showModal = true;
+	}?>
+		var passHidden = true;
+		document.addEventListener('DOMContentLoaded', function() {
+			var showModal = <?php echo $showModal; ?>;
+		   	var modalScreen = document.getElementById("admin-modal-screen");
+			var modalHolder = document.getElementById("admin-modal-holder");
+			
+			if(showModal){
+				modalScreen.style.display = "block";
+				setTimeout(function(){
+					modalScreen.style.opacity = "1";
+					setTimeout(function(){
+						 modalHolder.style.marginTop = "70px";
+						 modalHolder.style.opacity = "1";
+						}, 300);
+				}, 10);
+			}
+		}, false);
+		
+		function onDismissAdminModal(){
+			var modalScreen = document.getElementById("admin-modal-screen");
+			var modalHolder = document.getElementById("admin-modal-holder");
+			
+			modalHolder.style.marginTop = "30px";
+			setTimeout(function(){
+				modalHolder.style.marginTop = "200px";
+				modalHolder.style.opacity = "0";
+				setTimeout(function(){
+					modalScreen.style.opacity = "0";
+					setTimeout(function(){
+						 modalScreen.style.display = "none";
+						}, 10);
+				}, 300);
+			}, 300);
+			
+		}
+		
+		function showAddedPassword(){
+			var showPassBtn = document.getElementById("modal-content-button");
+			var passHolder = document.getElementById("modal-password");
+			
+			if(passHidden){
+				passHolder.style.filter = "blur(20px)";
+				showPassBtn.style.marginLeft = "-36px";
+				setTimeout(function(){
+					passHolder.innerHTML = "<?php echo $this->session->flashdata('new_password'); ?>";
+					showPassBtn.innerHTML = "HIDE";
+					showPassBtn.style.marginLeft = "0px";
+					passHolder.style.filter = "blur(0px)";
+				}, 300);
+				passHidden = false;
+			}else{
+				passHolder.style.filter = "blur(20px)";
+				showPassBtn.style.marginLeft = "-36px";
+				setTimeout(function(){
+					passHolder.innerHTML = "•••••";
+					showPassBtn.innerHTML = "SHOW";
+					showPassBtn.style.marginLeft = "0px";
+					passHolder.style.filter = "blur(0px)";
+				}, 300);
+				passHidden = true;
+			}
+		}
+	</script>
