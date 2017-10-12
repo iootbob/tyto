@@ -18,9 +18,6 @@ td {
 	padding: 5px 0px;
 }
 </style>
-<script>
-
-</script>
 
                  <div class="page-option-view">
                         <form action="" method="post" class="search-form" align="center">
@@ -64,11 +61,11 @@ td {
 									<td><?php echo $ad_acc['lib_email']; ?></td>
 									<td><?php echo $ad_acc['lib_phone']; ?></td>
 									<td>
-										<form action="<?php echo base_url(); ?>admin/accman/viewUser" method="post" accept-charset="utf-8">
+										<form action="<?php echo base_url(); ?>admin/accman/viewUser" method="post" accept-charset="utf-8" style="display: inline-block">
 											<input type="hidden" name="search_id" value="<?php echo $ad_acc['lib_id_number']; ?>">
 											<input type="submit" name="update" value="MODIFY" class="browse-users-options-btn">
 										</form>
-										<form action="<?php echo base_url(); ?>admin/accman/deleteUser" method="post" accept-charset="utf-8" onSubmit="return deleteAcc('<?php echo $ad_acc['lib_fname'];  ?>');">
+										<form action="<?php echo base_url(); ?>admin/accman/deleteUser" style="display: inline-block" method="post" accept-charset="utf-8" onSubmit="return deleteAcc('<?php echo $ad_acc['lib_fname'];  ?>');">
 											<input type="hidden" name="search_id" value="<?php echo $ad_acc['lib_id_number']; ?>">
 											<input type="hidden" name="search_type" value="1">
 											<input type="hidden" name="search_cur_id" value="<?php echo $user_info['id_number']; ?>">
@@ -88,11 +85,11 @@ td {
 									<td><?php echo $us_acc['user_email']; ?></td>
 									<td><?php echo $us_acc['user_phone']; ?></td>
 									<td>
-										<form action="<?php echo base_url(); ?>admin/accman/viewUser" method="post" accept-charset="utf-8">
+										<form action="<?php echo base_url(); ?>admin/accman/viewUser" method="post" accept-charset="utf-8" style="display: inline-block">
 											<input type="hidden" name="search_id" value="<?php echo $us_acc['user_id_number']; ?>">
 											<input type="submit" name="update" value="MODIFY" class="browse-users-options-btn">
 										</form>
-										<form action="<?php echo base_url(); ?>admin/accman/deleteUser" method="post" accept-charset="utf-8" onSubmit="return deleteAcc('<?php echo $us_acc['user_fname'];  ?>');">
+										<form action="<?php echo base_url(); ?>admin/accman/deleteUser" style="display: inline-block" method="post" accept-charset="utf-8" onSubmit="return deleteAcc('<?php echo $us_acc['user_fname'];  ?>');" >
 											<input type="hidden" name="search_id" value="<?php echo $us_acc['user_id_number']; ?>">
 											<input type="hidden" name="search_type" value="<?php echo $us_acc['user_type']; ?>">
 											<input type="submit" name="delete" value="DELETE" class="browse-users-options-btn">
@@ -101,9 +98,6 @@ td {
 								</tr>
 								
 							<?php } ?>
-                            
-                            
-                            
                             
                         </table>
                          <div class="pagination-links">

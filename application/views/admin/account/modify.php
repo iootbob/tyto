@@ -457,7 +457,8 @@ if (isset($view_user['id_number'])) {
 					
 					<tr>
 						<td class="input-box-label">Phone Number: </td>
-						<td><input type="number" name="phone" class="input-box-fill" value="<?php echo $phone; ?>"></td>
+						<td><?php echo form_input('phone',set_value('phone',$phone),$attributes=array("class" => "input-box-fill")); ?></td>
+						<!--<td><input type="number" name="phone" class="input-box-fill" value="<?php echo $phone; ?>"></td>-->
 					</tr>
 					
 					<tr>
