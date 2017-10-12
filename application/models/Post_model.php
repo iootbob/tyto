@@ -183,8 +183,7 @@ class Post_model extends CI_Model{
 			
 			$newid = 0;
 
-			$this->db->select_max('id');
-			$maxID = $this->db->get('user_accounts');
+			$maxID = $this->post_model->get_max_id(4);
 
 			if ($maxID->num_rows() > 0)
 			{
@@ -214,11 +213,45 @@ class Post_model extends CI_Model{
         
     }
 	
+	public function get_max_id($user_type) {
+		$this->db->select_max('id');
+		
+		if($user_type==1){
+			$maxID = $this->db->get('library_accounts');
+		}else{
+			$maxID = $this->db->get('user_accounts');
+		}
+		
+		return $maxID;
+	}
+	
+	public function get_most_recent_id($user_type){
+		/*$this->db->select('id')->order_by('id',"desc")->limit(1)->row();
+		if($user_type==1){
+			$maxID = $this->db->get('library_accounts');
+		}else{
+			$maxID = $this->db->get('user_accounts');
+		}
+		return $maxID;*/
+		
+		if($user_type==1){
+			$query ="select * from library_accounts order by id DESC limit 1";
+		}else{
+			$query ="select * from user_accounts order by id DESC limit 1";
+		}
+
+     	$res = $this->db->query($query);
+
+     	if($res->num_rows() > 0) {
+            return $res->result("array");
+    	}
+    	return array();
+	}
+	
 	public function set_admin_users($enc_password){
 		$newid = 0;
 
-        $this->db->select_max('id');
-    	$maxID = $this->db->get('library_accounts');
+    	$maxID = $this->post_model->get_max_id(1);
 		
 		if ($maxID->num_rows() > 0)
         {
