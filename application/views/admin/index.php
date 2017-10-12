@@ -1,6 +1,5 @@
  <?php
-
-$active_sublink = "active-sidenav-sublinks";
+$this->session->flashdata('new_user');
 
 $acc_browse = $acc_add = $acc_mod = $acc_adminInfo = "";
 $accman = false;
@@ -10,74 +9,40 @@ $rec_browse = "";
 $records = false;
 $stat_lib = $stat_dep = $stat_sys = "";
 $stats = false;
-	    switch(current_url()){
-            
-            case base_url().'admin/accman/browse':
-		      $acc_browse = $active_sublink;
-		      $accman = true;
-            break;
-            
-            case base_url().'admin/accman/add':
-            case base_url().'admin/accman/createUser':
-		      $acc_add = $active_sublink;
-		      $accman = true;
-            break;
-            
-            case base_url().'admin/accman/modify':
-            case base_url().'admin/accman/viewUser':
-		      $acc_mod = $active_sublink;
-		      $accman = true;
-            break;
-            
-            case base_url().'admin/accman/adminInfo':
-		      $acc_adminInfo = $active_sublink;
-		      $accman = true;
-            break;
-            
-            case base_url().'admin/resdata/browse':
-		      $res_browse = $active_sublink;
-		      $resdata = true;
-            break;
-                
-            case base_url().'admin/resdata/add':
-		      $res_add = $active_sublink;
-		      $resdata = true;
-            break;
-                
-            case base_url().'admin/resdata/modify':
-		      $res_mod = $active_sublink;
-		      $resdata = true;
-            break;  
-                
-            case base_url().'admin/records/browse':
-		      $rec_browse = $active_sublink;
-		      $records = true;
-            break;
-            
-            case base_url().'admin/statistics/library':
-		      $stats_lib = $active_sublink;
-		      $stat = true;
-            break;
-            
-            case base_url().'admin/statistics/department':
-		      $stats_dep = $active_sublink;
-		      $stat = true;
-            break;
-            
-            case base_url().'admin/statistics/system':
-		      $stat_sys = $active_sublink;
-		      $stats = true;
-            break;
- 
+	if(current_url() == base_url().'admin/accman/browse' || current_url() == base_url().'admin/accman'){
+		$acc_browse = $active_sublink;
+		$accman = true;
+	}else if(current_url() == base_url().'admin/accman/add' || current_url() == base_url().'admin/accman/createUser'){
+		$acc_add = $active_sublink;
+		$accman = true;
+	}else if(current_url() == base_url().'admin/accman/modify' || current_url() == base_url().'admin/accman/viewUser' || current_url() == base_url().'admin/accman/modifyUser') {
+		$acc_mod = $active_sublink;
+		$accman = true;
+	}else if(current_url() == base_url().'admin/accman/adminInfo'){
+		$acc_adminInfo = $active_sublink;
+		$accman = true;
+	}else if(current_url() == base_url().'admin/resdata/browse'){
+		$res_browse = $active_sublink;
+		$resdata = true;
+	}else if(current_url() == base_url().'admin/resdata/add' || current_url() == base_url().'admin/resdata/createBook'){
+		$res_add = $active_sublink;
+		$resdata = true;
+	}else if(current_url() == base_url().'admin/resdata/modify'){
+		$res_mod = $active_sublink;
+		$resdata = true;
+	}else if(current_url() == base_url().'admin/records/browse'){
+		$rec_browse = $active_sublink;
+		$records = true;
+	}else if(current_url() == base_url().'admin/statistics/library'){
+		$stat_lib = $active_sublink;
+		$stats = true;
+	}else if(current_url() == base_url().'admin/statistics/department'){
+		$stat_dep = $active_sublink;
+		$stats = true;
+	}else if(current_url() == base_url().'admin/statistics/system'){
+		$stat_sys = $active_sublink;
+		$stats = true;
 	}
-?>
-
-<?php 
-    
-
-        
-    
-
 ?>
  
  
@@ -90,6 +55,36 @@ $stats = false;
 		<button class="menu-button" onClick="toggleMenu();"><span class="fa" style="transition: 0.5s all" id="menu-icon">&#xf0c9;</span> Menu</button>
 	</header>
 	
+	<!-- modal  -->
+	<div id="admin-modal-screen">
+		<div id="admin-modal-holder">
+			<!-- update modal title, make dynamic, changing title  -->
+			<h1 class="admin-modal-title">ACCOUNT CREATED</h1>
+			<!-- content for account created -->
+			<div id="accman-account-created" class="modal-content-div">
+				<table>
+					<tr>
+						<th>Name: </th>
+						<td><?php echo $this->session->flashdata('new_name'); ?></td>
+					</tr>
+					<tr>
+						<th>ID Number: </th>
+						<td><?php echo $this->session->flashdata('new_id_number'); ?></td>
+					</tr>
+					
+					<tr>
+						<th>Password: </th>
+						<td>
+							<!-- ••••• is the default -->
+							<p id="modal-password">•••••</p>
+							<button id="modal-content-button" onClick="showAddedPassword();">SHOW</button>
+						</td>
+					</tr>
+				</table>
+				<button class="modal-button" onClick="onDismissAdminModal();">OK</button>
+			</div>
+		</div>
+	</div>
     
     <!-- sidebar  -->
 	<div class="page-body-holder">
